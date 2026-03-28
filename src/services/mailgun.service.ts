@@ -219,187 +219,186 @@ function buildEmailBody(summary: SyncSummary): string {
     summary.updatedEvents.length + summary.createdEvents.length;
   const totalFailed = summary.failedEvents.length;
 
-  let html = `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .header {
-      background-color: #0066cc;
-      color: white;
-      padding: 20px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-    }
-    .summary {
-      background-color: #f5f5f5;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-    }
-    .summary-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 5px 0;
-    }
-    .section {
-      margin-bottom: 30px;
-    }
-    .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #0066cc;
-      margin-bottom: 10px;
-      padding-bottom: 5px;
-      border-bottom: 2px solid #0066cc;
-    }
-    .event-list {
-      list-style: none;
-      padding: 0;
-    }
-    .event-item {
-      padding: 10px;
-      margin: 5px 0;
-      background-color: #f9f9f9;
-      border-left: 3px solid #0066cc;
-    }
-    .event-item.created {
-      border-left-color: #28a745;
-    }
-    .event-item.failed {
-      border-left-color: #dc3545;
-      background-color: #fff5f5;
-    }
-    .event-title {
-      font-weight: bold;
-    }
-    .event-id {
-      color: #666;
-      font-size: 14px;
-    }
-    .error-message {
-      color: #dc3545;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-    .footer {
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 1px solid #ddd;
-      color: #666;
-      font-size: 12px;
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>CRM to Umbraco Sync Report</h1>
-    <p>Sync Date: ${summary.syncDate}</p>
-  </div>
+  const statusColor = totalFailed > 0 ? "#dc3545" : "#28a745";
+  const statusText =
+    totalFailed > 0
+      ? `&#9888; ${totalFailed} event(s) failed`
+      : "&#10003; All events synced successfully";
 
-  <div class="summary">
-    <h2>Summary</h2>
-    <div class="summary-item">
-      <span>Total Events Processed:</span>
-      <strong>${totalProcessed}</strong>
-    </div>
-    <div class="summary-item">
-      <span>Events Updated:</span>
-      <strong>${summary.updatedEvents.length}</strong>
-    </div>
-    <div class="summary-item">
-      <span>Events Created:</span>
-      <strong>${summary.createdEvents.length}</strong>
-    </div>
-    ${
-      totalFailed > 0
-        ? `
-    <div class="summary-item" style="color: #dc3545;">
-      <span>Failed Events:</span>
-      <strong>${totalFailed}</strong>
-    </div>
-    `
-        : ""
-    }
-  </div>
-`;
+  let eventRows = "";
 
   if (summary.updatedEvents.length > 0) {
-    html += `
-  <div class="section">
-    <div class="section-title">Updated Events (${summary.updatedEvents.length})</div>
-    <ul class="event-list">
-`;
+    eventRows += `
+        <tr>
+          <td style="padding:15px 25px 5px;">
+            <p style="margin:0 0 8px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#9b895b;">
+              Updated Events (${summary.updatedEvents.length})
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 25px 15px;">
+            <ul style="margin:0;padding-left:20px;list-style-type:disc;">`;
     summary.updatedEvents.forEach((event) => {
-      html += `
-      <li class="event-item">
-        <div class="event-title">${event.title}</div>
-        <div class="event-id">Event ID: ${event.eventId}</div>
-      </li>
-`;
+      eventRows += `
+              <li style="font-family:Arial,sans-serif;font-size:13px;color:#000000;line-height:2;">
+                <b>${event.title}</b> &mdash; ID: ${event.eventId}
+              </li>`;
     });
-    html += `
-    </ul>
-  </div>
-`;
+    eventRows += `
+            </ul>
+          </td>
+        </tr>`;
   }
 
   if (summary.createdEvents.length > 0) {
-    html += `
-  <div class="section">
-    <div class="section-title">Created Events (${summary.createdEvents.length})</div>
-    <ul class="event-list">
-`;
+    eventRows += `
+        <tr>
+          <td style="padding:15px 25px 5px;">
+            <p style="margin:0 0 8px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#28a745;">
+              Created Events (${summary.createdEvents.length})
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 25px 15px;">
+            <ul style="margin:0;padding-left:20px;list-style-type:disc;">`;
     summary.createdEvents.forEach((event) => {
-      html += `
-      <li class="event-item created">
-        <div class="event-title">${event.title}</div>
-        <div class="event-id">Event ID: ${event.eventId}</div>
-      </li>
-`;
+      eventRows += `
+              <li style="font-family:Arial,sans-serif;font-size:13px;color:#000000;line-height:2;">
+                <b>${event.title}</b> &mdash; ID: ${event.eventId}
+              </li>`;
     });
-    html += `
-    </ul>
-  </div>
-`;
+    eventRows += `
+            </ul>
+          </td>
+        </tr>`;
   }
 
   if (summary.failedEvents.length > 0) {
-    html += `
-  <div class="section">
-    <div class="section-title">Failed Events (${summary.failedEvents.length})</div>
-    <ul class="event-list">
-`;
+    eventRows += `
+        <tr>
+          <td style="padding:15px 25px 5px;">
+            <p style="margin:0 0 8px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#dc3545;">
+              Failed Events (${summary.failedEvents.length})
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 25px 15px;">
+            <ul style="margin:0;padding-left:20px;list-style-type:disc;">`;
     summary.failedEvents.forEach((event) => {
-      html += `
-      <li class="event-item failed">
-        <div class="event-title">${event.title}</div>
-        <div class="event-id">Event ID: ${event.eventId}</div>
-        <div class="error-message">Error: ${event.error}</div>
-      </li>
-`;
+      eventRows += `
+              <li style="font-family:Arial,sans-serif;font-size:13px;color:#dc3545;line-height:2;">
+                <b>${event.title}</b> &mdash; ID: ${event.eventId}<br/>
+                <span style="font-size:12px;">Error: ${event.error}</span>
+              </li>`;
     });
-    html += `
-    </ul>
-  </div>
-`;
+    eventRows += `
+            </ul>
+          </td>
+        </tr>`;
   }
 
-  html += `
-  <div class="footer">
-    <p>This is an automated notification from the CRM to Umbraco sync service.</p>
-  </div>
-</body>
-</html>
-`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM to Umbraco Sync Report</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f4;font-family:Verdana,Helvetica,Arial,sans-serif;">
 
-  return html;
+  <!-- Header: black background with two logo images side by side -->
+  <div style="background-color:#000000;margin:0 auto;max-width:600px;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;">
+      <tr>
+        <td width="50%" align="center" style="padding:10px 25px;">
+          <img src="https://media.umbraco.io/dev-dwtc/fvsmadsf/left.jpg"
+               alt="DWTC Logo Left"
+               style="width:100%;max-width:250px;height:auto;display:block;border:none;" />
+        </td>
+        <td width="50%" align="left" style="padding:20px 0 10px 20px;">
+          <img src="https://media.umbraco.io/dev-dwtc/lcjn5fke/en_01_02.jpg"
+               alt="DWTC Logo Right"
+               style="width:100%;max-width:280px;height:auto;display:block;border:none;" />
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Hero / Banner image -->
+  <div style="margin:0 auto;max-width:600px;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;">
+      <tr>
+        <td>
+          <img src="https://media.umbraco.io/dev-dwtc/cmsmkss5/uae-partnership.jpg"
+               alt="UAE Partnership"
+               style="width:100%;height:auto;display:block;border:none;" />
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Greeting -->
+  <div style="background-color:#ffffff;margin:0 auto;max-width:600px;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;">
+      <tr>
+        <td align="center" style="padding:20px 25px 5px;">
+          <h1 style="margin:0;line-height:22px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:20px;color:#9b895b;text-align:center;">
+            CRM to Umbraco Sync Report
+          </h1>
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="padding:10px 25px 5px;">
+          <p style="margin:13px 0;line-height:22px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:13px;color:#55575d;text-align:center;">
+            The automated CRM to Umbraco event sync has completed. Please find the summary below.
+          </p>
+          <p style="margin:4px 0;line-height:22px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:12px;color:#55575d;text-align:center;">
+            Sync Date: ${summary.syncDate}
+          </p>
+          <p style="margin:13px 0;">&nbsp;</p>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Summary stats -->
+  <div style="background-color:#ffffff;margin:0 auto;max-width:600px;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;">
+      <tr>
+        <td style="padding:0 25px 20px;">
+          <ul style="margin:0;padding-left:20px;list-style-type:disc;">
+            <li style="font-family:Arial,sans-serif;font-size:13px;color:#000000;line-height:2;"><b>Total Events Processed:</b> ${totalProcessed}</li>
+            <li style="font-family:Arial,sans-serif;font-size:13px;color:#000000;line-height:2;"><b>Events Updated:</b> ${summary.updatedEvents.length}</li>
+            <li style="font-family:Arial,sans-serif;font-size:13px;color:#000000;line-height:2;"><b>Events Created:</b> ${summary.createdEvents.length}</li>
+            <li style="font-family:Arial,sans-serif;font-size:13px;color:${statusColor};line-height:2;"><b>Status:</b> ${statusText}</li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Event details -->
+  ${
+    eventRows
+      ? `<div style="background-color:#ffffff;margin:0 auto;max-width:600px;padding-bottom:20px;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:collapse;">
+      <tr><td style="padding:0 25px;"><hr style="border:none;border-top:1px solid #eeeeee;margin:0;" /></td></tr>
+      ${eventRows}
+    </table>
+  </div>`
+      : ""
+  }
+
+  <!-- Footer -->
+  <div style="margin:0 auto;max-width:600px;padding:15px 25px;">
+    <p style="margin:0;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:11px;color:#999999;text-align:center;">
+      This is an automated notification from the DWTC CRM to Umbraco sync service. Please do not reply to this email.
+    </p>
+  </div>
+
+</body>
+</html>`;
 }
