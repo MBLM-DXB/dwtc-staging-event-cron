@@ -181,7 +181,7 @@ export async function sendSyncNotificationEmail(
     formData.append("to", env.NOTIFICATION_EMAIL);
     formData.append(
       "subject",
-      `CRM to Umbraco Sync Report - ${totalProcessed} Events Processed`
+      `[DWTC Staging] CRM to Umbraco Sync Report - ${totalProcessed} Events Processed`
     );
     formData.append("html", emailBody);
     formData.append(
@@ -346,14 +346,14 @@ function buildEmailBody(summary: SyncSummary): string {
       <tr>
         <td align="center" style="padding:20px 25px 5px;">
           <h1 style="margin:0;line-height:22px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:20px;color:#9b895b;text-align:center;">
-            CRM to Umbraco Sync Report
+            DWTC Staging — CRM to Umbraco Sync Report
           </h1>
         </td>
       </tr>
       <tr>
         <td align="center" style="padding:10px 25px 5px;">
           <p style="margin:13px 0;line-height:22px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:13px;color:#55575d;text-align:center;">
-            The automated CRM to Umbraco event sync has completed. Please find the summary below.
+            The automated <b>DWTC Staging</b> CRM to Umbraco event sync has completed. Please find the summary below.
           </p>
           <p style="margin:4px 0;line-height:22px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:12px;color:#55575d;text-align:center;">
             Sync Date: ${summary.syncDate}
