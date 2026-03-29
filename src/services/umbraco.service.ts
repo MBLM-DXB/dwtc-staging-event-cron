@@ -35,7 +35,6 @@ export async function fetchEventById(
     }
 
     const data: any = await response.json();
-    console.log("fetch by id response:", data);
 
     return { success: true, data };
   } catch (error) {
