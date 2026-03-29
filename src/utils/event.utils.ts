@@ -3,6 +3,14 @@ import type {
   UmbracoEvent,
   CreateEventRequest,
 } from "../types/events.types";
+import { location as locationMap } from "../constants/location";
+
+function mapLocationCodes(locationCodes: string): string {
+  return locationCodes
+    .split(",")
+    .map((code) => locationMap[code.trim() as keyof typeof locationMap] ?? code.trim())
+    .join(", ");
+}
 
 /**
  * Remove surrounding quotes from a date string if present
@@ -78,8 +86,8 @@ export function mapCrmEventToUmbraco(
       ar: crmEvent.pageContent,
     },
     location: {
-      "en-US": crmEvent.location,
-      ar: crmEvent.location,
+      "en-US": crmEvent.location ? mapLocationCodes(crmEvent.location) : null,
+      ar: crmEvent.location ? mapLocationCodes(crmEvent.location) : null,
     },
     eventOrganiser: {
       "en-US": crmEvent.eventOrganiser,

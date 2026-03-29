@@ -87,21 +87,6 @@ export default {
 
     if (toUpdate.length === 0 && toCreate.length === 0) {
       console.log("✅ All events are up to date - no sync needed!");
-
-      try {
-        await sendSyncNotificationEmail(env, {
-          updatedEvents,
-          createdEvents,
-          failedEvents,
-          syncDate: new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Dubai",
-            dateStyle: "full",
-            timeStyle: "long",
-          }),
-        });
-      } catch (emailError) {
-        console.error("⚠️ Email notification failed");
-      }
       return;
     }
 
@@ -234,19 +219,21 @@ export default {
 
     console.log("✅ Sync completed successfully!");
 
-    try {
-      await sendSyncNotificationEmail(env, {
-        updatedEvents,
-        createdEvents,
-        failedEvents,
-        syncDate: new Date().toLocaleString("en-US", {
-          timeZone: "Asia/Dubai",
-          dateStyle: "full",
-          timeStyle: "long",
-        }),
-      });
-    } catch (emailError) {
-      console.error("⚠️ Sync completed but email notification failed");
+    if (updatedEvents.length > 0 || createdEvents.length > 0 || failedEvents.length > 0) {
+      try {
+        await sendSyncNotificationEmail(env, {
+          updatedEvents,
+          createdEvents,
+          failedEvents,
+          syncDate: new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Dubai",
+            dateStyle: "full",
+            timeStyle: "long",
+          }),
+        });
+      } catch (emailError) {
+        console.error("⚠️ Sync completed but email notification failed");
+      }
     }
 
     if (processedEventIds.length > 0) {
