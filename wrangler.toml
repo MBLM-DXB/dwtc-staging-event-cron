@@ -5,6 +5,10 @@ compatibility_date = "2024-01-07"
 [triggers]
 crons = ["0 9 * * *"]
 
+[[kv_namespaces]]
+binding = "CRON_LOCK"
+id = "4705d229a4ab40f38be5443f17e7da15"
+
 
 [observability]
 [observability.logs]

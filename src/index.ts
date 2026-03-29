@@ -29,6 +29,17 @@ export interface ExportedHandler {
 
 export default {
   async scheduled(event, env, ctx) {
+    const LOCK_KEY = "sync_lock";
+    const LOCK_TTL = 600; // 10 minutes — auto-expires if worker crashes
+
+    const existingLock = await env.CRON_LOCK.get(LOCK_KEY);
+    if (existingLock) {
+      console.log("⏸️ Sync already in progress, skipping this run.");
+      return;
+    }
+    await env.CRON_LOCK.put(LOCK_KEY, "locked", { expirationTtl: LOCK_TTL });
+
+    try {
     console.log("🔄 Starting CRM to Umbraco sync...");
 
     const crmResponse = await fetchCrmEvents(env);
@@ -253,6 +264,9 @@ export default {
       } catch (webhookError) {
         console.error("⚠️ Failed to trigger Cloudflare build webhook");
       }
+    }
+    } finally {
+      await env.CRON_LOCK.delete(LOCK_KEY);
     }
   },
 
