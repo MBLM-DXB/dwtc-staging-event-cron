@@ -8,7 +8,10 @@ import { location as locationMap } from "../constants/location";
 function mapLocationCodes(locationCodes: string): string {
   return locationCodes
     .split(",")
-    .map((code) => locationMap[code.trim() as keyof typeof locationMap] ?? code.trim())
+    .map(
+      (code) =>
+        locationMap[code.trim() as keyof typeof locationMap] ?? code.trim(),
+    )
     .join(", ");
 }
 
@@ -21,13 +24,10 @@ function normalizeDateString(dateString: string): string {
 
 export function filterEventsByVenue(
   events: CrmEvent[],
-  venue: string
+  venue: string,
 ): CrmEvent[] {
   const filteredEvents = events.filter(
-    (event) =>
-      event.eventVenues &&
-      event.eventVenues.includes(venue) &&
-      event.WebsiteStatus.toLowerCase() === "online"
+    (event) => event.eventVenues && event.eventVenues.includes(venue),
   );
   return filteredEvents;
 }
@@ -39,7 +39,7 @@ export interface SyncResult {
 
 export function compareEvents(
   crmEvents: CrmEvent[],
-  umbracoEvents: UmbracoEvent[]
+  umbracoEvents: UmbracoEvent[],
 ): SyncResult {
   const toUpdate: Array<{ umbracoEvent: UmbracoEvent; crmEvent: CrmEvent }> =
     [];
@@ -54,7 +54,7 @@ export function compareEvents(
     if (umbracoEvent) {
       const normalizedCrmDate = normalizeDateString(crmEvent.lastUpdatedDate);
       const normalizedUmbracoDate = normalizeDateString(
-        umbracoEvent.lastUpdatedDate
+        umbracoEvent.lastUpdatedDate,
       );
       if (normalizedCrmDate !== normalizedUmbracoDate) {
         toUpdate.push({ umbracoEvent, crmEvent });
@@ -69,7 +69,7 @@ export function compareEvents(
 
 export function mapCrmEventToUmbraco(
   crmEvent: CrmEvent,
-  parentId?: string
+  parentId?: string,
 ): CreateEventRequest | Omit<CreateEventRequest, "parentId"> {
   const baseData = {
     name: {
