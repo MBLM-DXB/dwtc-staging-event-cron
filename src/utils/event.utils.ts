@@ -5,14 +5,17 @@ import type {
 } from "../types/events.types";
 import { location as locationMap } from "../constants/location";
 
-function mapLocationCodes(locationCodes: string): string {
-  return locationCodes
-    .split(",")
-    .map(
-      (code) =>
-        locationMap[code.trim() as keyof typeof locationMap] ?? code.trim(),
-    )
-    .join(", ");
+function mapLocationCodes(locationCodes: string): string[] {
+  return [
+    ...new Set(
+      locationCodes
+        .split(",")
+        .map(
+          (code) =>
+            locationMap[code.trim() as keyof typeof locationMap] ?? code.trim(),
+        ),
+    ),
+  ];
 }
 
 /**
@@ -88,10 +91,10 @@ export function mapCrmEventToUmbraco(
       "en-US": crmEvent.pageContent,
       ar: crmEvent.pageContent,
     },
-    location: {
-      "en-US": crmEvent.location ? mapLocationCodes(crmEvent.location) : null,
-      ar: crmEvent.location ? mapLocationCodes(crmEvent.location) : null,
-    },
+    // location: {
+    //   "en-US": crmEvent.location ? mapLocationCodes(crmEvent.location) : null,
+    //   ar: crmEvent.location ? mapLocationCodes(crmEvent.location) : null,
+    // },
     eventOrganiser: {
       "en-US": crmEvent.eventOrganiser,
       ar: crmEvent.eventOrganiser,
@@ -140,7 +143,9 @@ export function mapCrmEventToUmbraco(
       $invariant: crmEvent.eventType,
     },
     eventVenues: {
-      $invariant: crmEvent.eventVenues,
+      $invariant: crmEvent.location
+        ? mapLocationCodes(crmEvent.location)
+        : null,
     },
   };
 

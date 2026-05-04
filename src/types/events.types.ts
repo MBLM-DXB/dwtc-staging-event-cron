@@ -76,7 +76,7 @@ export interface CreateEventRequest {
   contentTypeAlias: string;
   title: LocalizedField;
   description: LocalizedField;
-  location: LocalizedField<string | null>;
+  location?: LocalizedField<string | null>;
   eventOrganiser: LocalizedField;
   websiteURL: LocalizedField<string | null>;
   eventId: InvariantField<number>;
@@ -91,7 +91,7 @@ export interface CreateEventRequest {
   startDate: InvariantField;
   endDate: InvariantField;
   eventType: InvariantField;
-  eventVenues: InvariantField<string[]>;
+  eventVenues: InvariantField<string[] | null>;
 }
 
 export interface UmbracoContentResponse {
