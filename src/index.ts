@@ -3,7 +3,6 @@ import {
   fetchUmbracoEvents,
   createUmbracoEvent,
   updateUmbracoEvent,
-  publishUmbracoEvent,
   fetchEventById,
 } from "./services/umbraco.service";
 import { sendSyncNotificationEmail } from "./services/mailgun.service";
@@ -135,6 +134,14 @@ export default {
       const eventData = {
         ...existingEvent,
         ...crmEventData,
+        title: {
+          "en-US": crmEvent.title,
+          ar: existingEvent.title?.ar || crmEvent.title,
+        },
+        description: {
+          "en-US": crmEvent.pageContent,
+          ar: existingEvent.description?.ar || crmEvent.pageContent,
+        },
       };
       const updateResult = await updateUmbracoEvent(
         env,
@@ -209,24 +216,24 @@ export default {
       }
     }
 
-    for (const contentId of processedEventIds) {
-      const publishResult = await publishUmbracoEvent(env, contentId);
+    // for (const contentId of processedEventIds) {
+    //   const publishResult = await publishUmbracoEvent(env, contentId);
 
-      if (publishResult.success) {
-        const eventInfo = [...updatedEvents, ...createdEvents].find(
-          (e) =>
-            e.eventId.toString() === contentId ||
-            contentId.includes(e.eventId.toString())
-        );
-        const eventName = eventInfo?.title || contentId;
-        console.log(`🚀 Published: ${eventName}`);
-      } else {
-        console.error(
-          `❌ Failed to publish event ${contentId}:`,
-          publishResult.error
-        );
-      }
-    }
+    //   if (publishResult.success) {
+    //     const eventInfo = [...updatedEvents, ...createdEvents].find(
+    //       (e) =>
+    //         e.eventId.toString() === contentId ||
+    //         contentId.includes(e.eventId.toString())
+    //     );
+    //     const eventName = eventInfo?.title || contentId;
+    //     console.log(`🚀 Published: ${eventName}`);
+    //   } else {
+    //     console.error(
+    //       `❌ Failed to publish event ${contentId}:`,
+    //       publishResult.error
+    //     );
+    //   }
+    // }
 
     console.log("✅ Sync completed successfully!");
 

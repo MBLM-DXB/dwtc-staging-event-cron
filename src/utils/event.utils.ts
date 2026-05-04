@@ -109,30 +109,30 @@ export function mapCrmEventToUmbraco(
     lastUpdatedDate: {
       $invariant: `"${crmEvent.lastUpdatedDate}"`,
     },
-    facebook: {
-      "en-US": crmEvent.socialMedia?.facebook || null,
-      ar: crmEvent.socialMedia?.facebook || null,
-    },
-    linkedIn: {
-      "en-US": crmEvent.socialMedia?.linkedIn || null,
-      ar: crmEvent.socialMedia?.linkedIn || null,
-    },
-    twitter: {
-      "en-US": null,
-      ar: null,
-    },
-    instagram: {
-      "en-US": crmEvent.socialMedia?.instagram || null,
-      ar: crmEvent.socialMedia?.instagram || null,
-    },
-    youtube: {
-      "en-US": crmEvent.socialMedia?.youtube || null,
-      ar: crmEvent.socialMedia?.youtube || null,
-    },
-    tiktok: {
-      "en-US": crmEvent.socialMedia?.tiktok || null,
-      ar: crmEvent.socialMedia?.tiktok || null,
-    },
+    // facebook: {
+    //   "en-US": crmEvent.socialMedia?.facebook || null,
+    //   ar: crmEvent.socialMedia?.facebook || null,
+    // },
+    // linkedIn: {
+    //   "en-US": crmEvent.socialMedia?.linkedIn || null,
+    //   ar: crmEvent.socialMedia?.linkedIn || null,
+    // },
+    // twitter: {
+    //   "en-US": null,
+    //   ar: null,
+    // },
+    // instagram: {
+    //   "en-US": crmEvent.socialMedia?.instagram || null,
+    //   ar: crmEvent.socialMedia?.instagram || null,
+    // },
+    // youtube: {
+    //   "en-US": crmEvent.socialMedia?.youtube || null,
+    //   ar: crmEvent.socialMedia?.youtube || null,
+    // },
+    // tiktok: {
+    //   "en-US": crmEvent.socialMedia?.tiktok || null,
+    //   ar: crmEvent.socialMedia?.tiktok || null,
+    // },
     startDate: {
       $invariant: crmEvent.startDate,
     },
@@ -142,9 +142,9 @@ export function mapCrmEventToUmbraco(
     dWTCEvent: {
       $invariant: crmEvent.dWTCEvent,
     },
-    eventSectors: {
-      $invariant: crmEvent.eventSectors,
-    },
+    // eventSectors: {
+    //   $invariant: crmEvent.eventSectors,
+    // },
     eventType: {
       $invariant: crmEvent.eventType,
     },

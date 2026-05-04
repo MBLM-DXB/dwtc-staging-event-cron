@@ -81,17 +81,17 @@ export interface CreateEventRequest {
   websiteURL: LocalizedField<string | null>;
   eventId: InvariantField<number>;
   lastUpdatedDate: InvariantField;
-  facebook: LocalizedField<string | null>;
-  linkedIn: LocalizedField<string | null>;
-  twitter: LocalizedField<string | null>;
-  instagram: LocalizedField<string | null>;
-  youtube: LocalizedField<string | null>;
-  tiktok: LocalizedField<string | null>;
+  facebook?: LocalizedField<string | null>;
+  linkedIn?: LocalizedField<string | null>;
+  twitter?: LocalizedField<string | null>;
+  instagram?: LocalizedField<string | null>;
+  youtube?: LocalizedField<string | null>;
+  tiktok?: LocalizedField<string | null>;
   parentId: string;
   startDate: InvariantField;
   endDate: InvariantField;
   dWTCEvent: InvariantField<boolean>;
-  eventSectors: InvariantField<string[]>;
+  eventSectors?: InvariantField<string[]>;
   eventType: InvariantField;
   eventVenues: InvariantField<string[] | null>;
 }
