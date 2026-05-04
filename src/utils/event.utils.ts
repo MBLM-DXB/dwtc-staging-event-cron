@@ -139,6 +139,9 @@ export function mapCrmEventToUmbraco(
     endDate: {
       $invariant: crmEvent.endDate,
     },
+    dWTCEvent: {
+      $invariant: crmEvent.dWTCEvent,
+    },
     eventType: {
       $invariant: crmEvent.eventType,
     },
