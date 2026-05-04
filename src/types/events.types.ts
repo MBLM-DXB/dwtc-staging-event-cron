@@ -91,6 +91,7 @@ export interface CreateEventRequest {
   startDate: InvariantField;
   endDate: InvariantField;
   dWTCEvent: InvariantField<boolean>;
+  eventSectors: InvariantField<string[]>;
   eventType: InvariantField;
   eventVenues: InvariantField<string[] | null>;
 }
