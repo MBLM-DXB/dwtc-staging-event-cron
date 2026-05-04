@@ -16,7 +16,7 @@ interface UmbracoGraphQLResponse {
 
 export async function fetchEventById(
   env: Env,
-  contentId: string
+  contentId: string,
 ): Promise<ServiceResponse<any>> {
   try {
     const response = await fetch(
@@ -28,7 +28,7 @@ export async function fetchEventById(
           "Api-Key": env.API_KEY,
           "Api-Version": "2",
         },
-      }
+      },
     );
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -46,7 +46,7 @@ export async function fetchEventById(
 }
 
 export async function fetchUmbracoEvents(
-  env: Env
+  env: Env,
 ): Promise<ServiceResponse<UmbracoEvent[]>> {
   try {
     const response = await fetch(`https://graphql.umbraco.io`, {
@@ -59,7 +59,7 @@ export async function fetchUmbracoEvents(
       body: JSON.stringify({
         query: `
           query {
-            allEvent {
+            allEvent(preview: true) {
               items {
                 id
                 eventId
@@ -86,7 +86,7 @@ export async function fetchUmbracoEvents(
 
 export async function createUmbracoEvent(
   env: Env,
-  eventData: CreateEventRequest
+  eventData: CreateEventRequest,
 ): Promise<ServiceResponse<UmbracoContentResponse>> {
   try {
     const response = await fetch("https://api.umbraco.io/content", {
@@ -110,7 +110,7 @@ export async function createUmbracoEvent(
     // Check if the response contains an error object
     if (data.error) {
       throw new Error(
-        `Umbraco API error: ${data.error.code} - ${data.error.message}`
+        `Umbraco API error: ${data.error.code} - ${data.error.message}`,
       );
     }
 
@@ -130,7 +130,7 @@ export async function createUmbracoEvent(
 export async function updateUmbracoEvent(
   env: Env,
   contentId: string,
-  eventData: Partial<CreateEventRequest>
+  eventData: Partial<CreateEventRequest>,
 ): Promise<ServiceResponse<UmbracoContentResponse>> {
   try {
     const response = await fetch(
@@ -144,7 +144,7 @@ export async function updateUmbracoEvent(
           "Api-Version": "2",
         },
         body: JSON.stringify({ parentId: env.UMBRACO_PARENT_ID, ...eventData }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -154,7 +154,7 @@ export async function updateUmbracoEvent(
     const data: any = await response.json();
     if (data.error) {
       throw new Error(
-        `Umbraco API error: ${data.error.code} - ${data.error.message}`
+        `Umbraco API error: ${data.error.code} - ${data.error.message}`,
       );
     }
 
@@ -169,7 +169,7 @@ export async function updateUmbracoEvent(
 
 export async function publishUmbracoEvent(
   env: Env,
-  contentId: string
+  contentId: string,
 ): Promise<ServiceResponse<UmbracoContentResponse>> {
   try {
     const response = await fetch(
@@ -181,7 +181,7 @@ export async function publishUmbracoEvent(
           "Api-Key": env.API_KEY,
           "Api-Version": "2",
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -191,7 +191,7 @@ export async function publishUmbracoEvent(
     const data: any = await response.json();
     if (data.error) {
       throw new Error(
-        `Umbraco API error: ${data.error.code} - ${data.error.message}`
+        `Umbraco API error: ${data.error.code} - ${data.error.message}`,
       );
     }
 
