@@ -89,10 +89,10 @@ export function mapCrmEventToUmbraco(
       "en-US": crmEvent.title,
       ar: crmEvent.title,
     },
-    description: {
-      "en-US": crmEvent.pageContent,
-      ar: crmEvent.pageContent,
-    },
+    // description: {
+    //   "en-US": crmEvent.pageContent,
+    //   ar: crmEvent.pageContent,
+    // },
     // location: {
     //   "en-US": crmEvent.location ? mapLocationCodes(crmEvent.location) : null,
     //   ar: crmEvent.location ? mapLocationCodes(crmEvent.location) : null,

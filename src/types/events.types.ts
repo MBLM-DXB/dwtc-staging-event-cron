@@ -75,7 +75,7 @@ export interface CreateEventRequest {
   name: LocalizedField;
   contentTypeAlias: string;
   title: LocalizedField;
-  description: LocalizedField;
+  description?: LocalizedField;
   location?: LocalizedField<string | null>;
   eventOrganiser: LocalizedField;
   websiteURL: LocalizedField<string | null>;
