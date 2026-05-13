@@ -5,6 +5,12 @@ import type {
 } from "../types/events.types";
 import { location as locationMap } from "../constants/location";
 
+const ORG_SUFFIXES = /\s*(GmbH|LLC|L\.L\.C|FZE|FZ-LLC|Ltd)\b\.?/gi;
+
+function stripOrgSuffixes(name: string): string {
+  return name.replace(ORG_SUFFIXES, "").trim();
+}
+
 function mapLocationCodes(locationCodes: string): string[] {
   return [
     ...new Set(
@@ -92,8 +98,8 @@ export function mapCrmEventToUmbraco(
     //   ar: crmEvent.location ? mapLocationCodes(crmEvent.location) : null,
     // },
     eventOrganiser: {
-      "en-US": crmEvent.eventOrganiser,
-      ar: crmEvent.eventOrganiser,
+      "en-US": stripOrgSuffixes(crmEvent.eventOrganiser),
+      ar: stripOrgSuffixes(crmEvent.eventOrganiser),
     },
     websiteURL: {
       "en-US": crmEvent.websiteURL,
