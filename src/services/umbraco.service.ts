@@ -89,6 +89,8 @@ export async function createUmbracoEvent(
   eventData: CreateEventRequest,
 ): Promise<ServiceResponse<UmbracoContentResponse>> {
   try {
+    const requestBody = JSON.stringify(eventData);
+    console.log(`📤 Create payload for event:`, requestBody);
     const response = await fetch("https://api.umbraco.io/content", {
       method: "POST",
       headers: {
@@ -97,8 +99,7 @@ export async function createUmbracoEvent(
         "Api-Key": env.API_KEY,
         "Api-Version": "2",
       },
-
-      body: JSON.stringify(eventData),
+      body: requestBody,
     });
 
     if (!response.ok) {
