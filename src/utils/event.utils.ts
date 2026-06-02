@@ -35,11 +35,14 @@ export function filterEventsByVenue(
   events: CrmEvent[],
   venue: string,
 ): CrmEvent[] {
+  const now = new Date();
+  const sixMonthsFromNow = new Date(now.getFullYear(), now.getMonth() + 6, now.getDate());
   const filteredEvents = events.filter(
     (event) =>
       event.eventVenues &&
       event.eventVenues.includes(venue) &&
-      event.WebsiteStatus?.toLowerCase() === "online",
+      event.WebsiteStatus?.toLowerCase() === "online" &&
+      new Date(event.endDate) <= sixMonthsFromNow,
   );
   return filteredEvents;
 }
@@ -60,7 +63,11 @@ export function compareEvents(
   umbracoEvents.forEach((event) => {
     umbracoMap.set(event.eventId, event);
   });
+  const now = new Date();
   crmEvents.forEach((crmEvent) => {
+    if (new Date(crmEvent.endDate) < now) {
+      return;
+    }
     const crmEventId = crmEvent.eventId.toString();
     const umbracoEvent = umbracoMap.get(crmEventId);
     if (umbracoEvent) {
