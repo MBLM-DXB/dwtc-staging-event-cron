@@ -102,7 +102,8 @@ export async function createUmbracoEvent(
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      const body = await response.text();
+      throw new Error(`HTTP ${response.status}: ${response.statusText} — ${body}`);
     }
 
     const data: any = await response.json();
