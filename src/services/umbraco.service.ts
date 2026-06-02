@@ -111,12 +111,12 @@ export async function createUmbracoEvent(
     // Check if the response contains an error object
     if (data.error) {
       throw new Error(
-        `Umbraco API error: ${data.error.code} - ${data.error.message}`,
+        `Umbraco API error: ${data.error.code} - ${data.error.message} | Full response: ${JSON.stringify(data)}`,
       );
     }
 
     if (!data._id) {
-      throw new Error("Invalid response: missing _id in created content");
+      throw new Error(`Invalid response: missing _id in created content | Full response: ${JSON.stringify(data)}`);
     }
 
     return { success: true, data };
