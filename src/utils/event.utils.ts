@@ -3,6 +3,7 @@ import type {
   UmbracoEvent,
   CreateEventRequest,
 } from "../types/events.types";
+import { location as locationMap } from "../constants/location";
 
 const ORG_SUFFIXES = /\s*(GmbH|LLC|L\.L\.C|FZE|FZ-LLC|Ltd)\b\.?/gi;
 
@@ -10,6 +11,18 @@ function stripOrgSuffixes(name: string): string {
   return name.replace(ORG_SUFFIXES, "").trim();
 }
 
+function mapLocationCodes(locationCodes: string): string[] {
+  return [
+    ...new Set(
+      locationCodes
+        .split(",")
+        .map(
+          (code) =>
+            locationMap[code.trim() as keyof typeof locationMap] ?? code.trim(),
+        ),
+    ),
+  ];
+}
 
 /**
  * Remove surrounding quotes from a date string if present
@@ -144,7 +157,11 @@ export function mapCrmEventToUmbraco(
     eventType: {
       $invariant: crmEvent.eventType,
     },
-    // eventVenues: CRM location data is unreliable — do not overwrite Umbraco values
+    eventVenues: {
+      $invariant: crmEvent.location
+        ? mapLocationCodes(crmEvent.location)
+        : null,
+    },
   };
 
   if (parentId) {

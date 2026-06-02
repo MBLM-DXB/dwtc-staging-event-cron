@@ -93,7 +93,7 @@ export interface CreateEventRequest {
   dWTCEvent: InvariantField<boolean>;
   eventSectors?: InvariantField<string[]>;
   eventType: InvariantField;
-  eventVenues?: InvariantField<string[] | null>;
+  eventVenues: InvariantField<string[] | null>;
 }
 
 export interface UmbracoContentResponse {
