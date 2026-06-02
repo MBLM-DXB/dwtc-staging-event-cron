@@ -16,10 +16,8 @@ function mapLocationCodes(locationCodes: string): string[] {
     ...new Set(
       locationCodes
         .split(",")
-        .map(
-          (code) =>
-            locationMap[code.trim() as keyof typeof locationMap] ?? code.trim(),
-        ),
+        .filter((code) => code.trim() in locationMap)
+        .map((code) => locationMap[code.trim() as keyof typeof locationMap]),
     ),
   ];
 }
