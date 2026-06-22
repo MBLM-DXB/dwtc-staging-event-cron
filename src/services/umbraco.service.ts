@@ -179,10 +179,12 @@ export async function publishUmbracoEvent(
       {
         method: "PUT",
         headers: {
+          "Content-Type": "application/json",
           "Umb-Project-Alias": env.UMBRACO_PROJECT_ALIAS,
           "Api-Key": env.API_KEY,
           "Api-Version": "2",
         },
+        body: JSON.stringify({ cultures: ["*"] }),
       },
     );
 
