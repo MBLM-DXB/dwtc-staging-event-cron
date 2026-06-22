@@ -29,7 +29,7 @@ export const location = {
   EOMPH1: "Za'abeel Hall 6",
   EOMPH2: "Za'abeel Hall 4 Link",
 
-  // Exhibition Halls (FIXED)
+  // Exhibition Halls (short codes)
   HALL1: "Hall 1",
   HALL2: "Hall 2",
   HALL3: "Hall 3",
@@ -38,6 +38,16 @@ export const location = {
   HALL6: "Hall 6",
   HALL7: "Hall 7",
   HALL8: "Hall 8",
+
+  // Exhibition Halls (CRM full display names → same Hall values)
+  "Exhibition Hall 1": "Hall 1",
+  "Exhibition Hall 2": "Hall 2",
+  "Exhibition Hall 3": "Hall 3",
+  "Exhibition Hall 4": "Hall 4",
+  "Exhibition Hall 5": "Hall 5",
+  "Exhibition Hall 6": "Hall 6",
+  "Exhibition Hall 7": "Hall 7",
+  "Exhibition Hall 8": "Hall 8",
 
   HALLSM: "Sheikh Maktoum Hall",
   LBYSM: "Sheikh Maktoum Lobby",
