@@ -3,6 +3,7 @@ export interface UmbracoEvent {
   eventId: string;
   lastUpdatedDate: string;
   name: string;
+  title: string;
 }
 
 export interface CrmEvent {
@@ -72,7 +73,7 @@ export interface InvariantField<T = string> {
 }
 
 export interface CreateEventRequest {
-  name: LocalizedField;
+  name?: LocalizedField;
   contentTypeAlias: string;
   title: LocalizedField;
   description?: LocalizedField;

@@ -10,6 +10,7 @@ import {
   filterEventsByVenue,
   compareEvents,
   mapCrmEventToUmbraco,
+  slugifyEventName,
 } from "./utils/event.utils";
 import type { Env, CreateEventRequest } from "./types/events.types";
 
@@ -136,6 +137,7 @@ export default {
       const eventData = {
         ...existingEvent,
         ...crmEventData,
+        name: existingEvent.name, // preserve existing URL slug on update
         title: {
           "en-US": crmEvent.title,
           ar: existingEvent.title?.ar || crmEvent.title,
@@ -162,8 +164,8 @@ export default {
           location: crmEvent.location,
           eventType: crmEvent.eventType,
           eventOrganiser: crmEvent.eventOrganiser,
-          titleChanged: umbracoEvent.name !== crmEvent.title,
-          previousTitle: umbracoEvent.name !== crmEvent.title ? umbracoEvent.name : undefined,
+          titleChanged: umbracoEvent.title !== crmEvent.title,
+          previousTitle: umbracoEvent.title !== crmEvent.title ? umbracoEvent.title : undefined,
         });
       } else {
         console.error(
@@ -184,10 +186,13 @@ export default {
     }
 
     for (const crmEvent of toCreate) {
-      const eventData = mapCrmEventToUmbraco(
-        crmEvent,
-        env.UMBRACO_PARENT_ID
-      ) as CreateEventRequest;
+      const eventData = {
+        ...mapCrmEventToUmbraco(crmEvent, env.UMBRACO_PARENT_ID),
+        name: {
+          "en-US": slugifyEventName(crmEvent.title, crmEvent.startDate),
+          ar: slugifyEventName(crmEvent.title, crmEvent.startDate),
+        },
+      } as CreateEventRequest;
       const createResult = await createUmbracoEvent(env, eventData);
 
       if (createResult.success) {
