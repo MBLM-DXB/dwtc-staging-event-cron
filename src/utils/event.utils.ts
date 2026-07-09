@@ -16,7 +16,8 @@ export function slugifyEventName(title: string, startDate: string): string {
   const name = title
     .replace(/[?#[\]@!$&'()*+,;=<>\\^`{}|~]/g, "")
     .replace(/\s+/g, " ")
-    .trim();
+    .trim()
+    .replace(/\s+\d{4}$/, "");
   return `${name} ${year}`;
 }
 
