@@ -78,9 +78,8 @@ export function compareEvents(
     const crmEventId = crmEvent.eventId.toString();
     const umbracoEvent = umbracoMap.get(crmEventId);
     if (umbracoEvent) {
-      if (crmEvent.lastUpdatedDate !== normalizeDateString(umbracoEvent.lastUpdatedDate)) {
-        toUpdate.push({ umbracoEvent, crmEvent });
-      }
+      // TEST MODE: force update all events regardless of lastUpdatedDate
+      toUpdate.push({ umbracoEvent, crmEvent });
     } else {
       toCreate.push(crmEvent);
     }

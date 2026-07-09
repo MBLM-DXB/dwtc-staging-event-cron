@@ -251,16 +251,19 @@ export default {
 
     if (updatedEvents.length > 0 || createdEvents.length > 0 || failedEvents.length > 0) {
       try {
-        await sendSyncNotificationEmail(env, {
-          updatedEvents,
-          createdEvents,
-          failedEvents,
-          syncDate: new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Dubai",
-            dateStyle: "full",
-            timeStyle: "long",
-          }),
-        });
+        await sendSyncNotificationEmail(
+          { ...env, NOTIFICATION_EMAIL: "aelzahab@mblm.com" },
+          {
+            updatedEvents,
+            createdEvents,
+            failedEvents,
+            syncDate: new Date().toLocaleString("en-US", {
+              timeZone: "Asia/Dubai",
+              dateStyle: "full",
+              timeStyle: "long",
+            }),
+          }
+        );
       } catch (emailError) {
         console.error("⚠️ Sync completed but email notification failed");
       }
