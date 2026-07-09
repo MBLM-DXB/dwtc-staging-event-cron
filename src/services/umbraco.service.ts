@@ -91,7 +91,6 @@ export async function createUmbracoEvent(
 ): Promise<ServiceResponse<UmbracoContentResponse>> {
   try {
     const requestBody = JSON.stringify(eventData);
-    console.log(`📤 Create payload for event:`, requestBody);
     const response = await fetch("https://api.umbraco.io/content", {
       method: "POST",
       headers: {

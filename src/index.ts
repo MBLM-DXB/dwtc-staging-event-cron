@@ -137,7 +137,10 @@ export default {
       const eventData = {
         ...existingEvent,
         ...crmEventData,
-        name: existingEvent.name, // preserve existing URL slug on update
+        name: {
+          "en-US": slugifyEventName(crmEvent.title, crmEvent.startDate),
+          ar: slugifyEventName(crmEvent.title, crmEvent.startDate),
+        },
         title: {
           "en-US": crmEvent.title,
           ar: existingEvent.title?.ar || crmEvent.title,
