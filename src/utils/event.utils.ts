@@ -39,7 +39,7 @@ function normalizeDateString(dateString: string): string {
   return dateString.replace(/^"(.*)"$/, "$1");
 }
 
-const CANCELLED_STATUSES = new Set(["cancelled", "post-contract cancellation"]);
+const CANCELLED_STATUSES = new Set(["cancelled"]);
 
 export function isEventCancelled(event: CrmEvent): boolean {
   return CANCELLED_STATUSES.has((event.Status || "").trim().toLowerCase());
