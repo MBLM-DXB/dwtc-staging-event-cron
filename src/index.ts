@@ -12,6 +12,8 @@ import {
   mapCrmEventToUmbraco,
   slugifyEventName,
   findCancelledLiveEvents,
+  hasLocationChanged,
+  formatEventLocation,
 } from "./utils/event.utils";
 import type { Env, CreateEventRequest } from "./types/events.types";
 
@@ -89,6 +91,11 @@ export default {
       eventOrganiser: string;
       titleChanged: boolean;
       previousTitle: string | undefined;
+      dateChanged: boolean;
+      previousStartDate: string | undefined;
+      previousEndDate: string | undefined;
+      locationChanged: boolean;
+      previousLocation: string | undefined;
     }> = [];
     const createdEvents: Array<{
       title: string;
@@ -127,7 +134,7 @@ export default {
           eventId: crmEvent.eventId,
           startDate: crmEvent.startDate,
           endDate: crmEvent.endDate,
-          location: crmEvent.location,
+          location: formatEventLocation(crmEvent.location),
           eventType: crmEvent.eventType,
           eventOrganiser: crmEvent.eventOrganiser,
           error: fetchResult.error,
@@ -176,11 +183,22 @@ export default {
           eventId: crmEvent.eventId,
           startDate: crmEvent.startDate,
           endDate: crmEvent.endDate,
-          location: crmEvent.location,
+          location: formatEventLocation(crmEvent.location),
           eventType: crmEvent.eventType,
           eventOrganiser: crmEvent.eventOrganiser,
           titleChanged: umbracoEvent.title !== crmEvent.title,
           previousTitle: umbracoEvent.title !== crmEvent.title ? umbracoEvent.title : undefined,
+          dateChanged:
+            umbracoEvent.startDate !== crmEvent.startDate ||
+            umbracoEvent.endDate !== crmEvent.endDate,
+          previousStartDate:
+            umbracoEvent.startDate !== crmEvent.startDate ? umbracoEvent.startDate : undefined,
+          previousEndDate:
+            umbracoEvent.endDate !== crmEvent.endDate ? umbracoEvent.endDate : undefined,
+          locationChanged: hasLocationChanged(crmEvent.location, umbracoEvent.eventVenues),
+          previousLocation: hasLocationChanged(crmEvent.location, umbracoEvent.eventVenues)
+            ? umbracoEvent.eventVenues.join(", ")
+            : undefined,
         });
       } else {
         console.error(
@@ -192,7 +210,7 @@ export default {
           eventId: crmEvent.eventId,
           startDate: crmEvent.startDate,
           endDate: crmEvent.endDate,
-          location: crmEvent.location,
+          location: formatEventLocation(crmEvent.location),
           eventType: crmEvent.eventType,
           eventOrganiser: crmEvent.eventOrganiser,
           error: updateResult.error,
@@ -218,7 +236,7 @@ export default {
           eventId: crmEvent.eventId,
           startDate: crmEvent.startDate,
           endDate: crmEvent.endDate,
-          location: crmEvent.location,
+          location: formatEventLocation(crmEvent.location),
           eventType: crmEvent.eventType,
           eventOrganiser: crmEvent.eventOrganiser,
         });
@@ -232,7 +250,7 @@ export default {
           eventId: crmEvent.eventId,
           startDate: crmEvent.startDate,
           endDate: crmEvent.endDate,
-          location: crmEvent.location,
+          location: formatEventLocation(crmEvent.location),
           eventType: crmEvent.eventType,
           eventOrganiser: crmEvent.eventOrganiser,
           error: createResult.error,

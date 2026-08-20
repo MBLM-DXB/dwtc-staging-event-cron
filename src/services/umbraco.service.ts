@@ -66,6 +66,9 @@ export async function fetchUmbracoEvents(
                 lastUpdatedDate
                 name
                 title
+                startDate
+                endDate
+                eventVenues
               }
             }
           }

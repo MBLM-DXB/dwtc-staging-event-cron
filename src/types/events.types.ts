@@ -4,6 +4,9 @@ export interface UmbracoEvent {
   lastUpdatedDate: string;
   name: string;
   title: string;
+  startDate: string;
+  endDate: string;
+  eventVenues: string[];
 }
 
 export interface CrmEvent {

@@ -11,6 +11,11 @@ interface EventDetails {
   eventOrganiser?: string;
   titleChanged?: boolean;
   previousTitle?: string;
+  dateChanged?: boolean;
+  previousStartDate?: string;
+  previousEndDate?: string;
+  locationChanged?: boolean;
+  previousLocation?: string;
 }
 
 interface CancelledLiveEvent {
@@ -60,9 +65,14 @@ function generateExcelAttachment(summary: SyncSummary): Uint8Array {
 
   if (summary.updatedEvents.length > 0) {
     summaryData.push([""], ["UPDATED EVENTS"]);
-    summaryData.push(["Event Name", "Title Changed"]);
+    summaryData.push(["Event Name", "Title Changed", "Date Changed", "Location Changed"]);
     summary.updatedEvents.forEach((e) => {
-      summaryData.push([e.title, e.titleChanged ? `Yes (was: ${e.previousTitle})` : "No"]);
+      summaryData.push([
+        e.title,
+        e.titleChanged ? `Yes (was: ${e.previousTitle})` : "No",
+        e.dateChanged ? `Yes (was: ${e.previousStartDate || "N/A"} - ${e.previousEndDate || "N/A"})` : "No",
+        e.locationChanged ? `Yes (was: ${e.previousLocation || "N/A"})` : "No",
+      ]);
     });
   }
 
@@ -108,6 +118,11 @@ function generateExcelAttachment(summary: SyncSummary): Uint8Array {
         "Organiser",
         "Title Changed",
         "Previous Title",
+        "Date Changed",
+        "Previous Start Date",
+        "Previous End Date",
+        "Location Changed",
+        "Previous Location",
       ],
       ...summary.updatedEvents.map((e) => [
         e.title,
@@ -119,6 +134,11 @@ function generateExcelAttachment(summary: SyncSummary): Uint8Array {
         e.eventOrganiser || "N/A",
         e.titleChanged ? "Yes" : "No",
         e.previousTitle || "",
+        e.dateChanged ? "Yes" : "No",
+        e.previousStartDate || "",
+        e.previousEndDate || "",
+        e.locationChanged ? "Yes" : "No",
+        e.previousLocation || "",
       ]),
     ];
     const updatedSheet = XLSX.utils.aoa_to_sheet(updatedData);
@@ -298,9 +318,14 @@ function buildEmailBody(summary: SyncSummary): string {
           <td style="padding:0 25px 15px;">
             <ul style="margin:0;padding-left:20px;list-style-type:disc;">`;
     summary.updatedEvents.forEach((event) => {
+      const changes: string[] = [];
+      if (event.titleChanged) changes.push(`title (was: ${event.previousTitle})`);
+      if (event.dateChanged) changes.push(`dates (was: ${event.previousStartDate || "N/A"} - ${event.previousEndDate || "N/A"})`);
+      if (event.locationChanged) changes.push(`location (was: ${event.previousLocation || "N/A"})`);
+      const changeSummary = changes.length > 0 ? `<br/><span style="font-size:12px;color:#55575d;">Changed: ${changes.join("; ")}</span>` : "";
       eventRows += `
               <li style="font-family:Arial,sans-serif;font-size:13px;color:#000000;line-height:2;">
-                <b>${event.title}</b> &mdash; ID: ${event.eventId}
+                <b>${event.title}</b> &mdash; ID: ${event.eventId}${changeSummary}
               </li>`;
     });
     eventRows += `
