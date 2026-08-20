@@ -318,14 +318,9 @@ function buildEmailBody(summary: SyncSummary): string {
           <td style="padding:0 25px 15px;">
             <ul style="margin:0;padding-left:20px;list-style-type:disc;">`;
     summary.updatedEvents.forEach((event) => {
-      const changes: string[] = [];
-      if (event.titleChanged) changes.push(`title (was: ${event.previousTitle})`);
-      if (event.dateChanged) changes.push(`dates (was: ${event.previousStartDate || "N/A"} - ${event.previousEndDate || "N/A"})`);
-      if (event.locationChanged) changes.push(`location (was: ${event.previousLocation || "N/A"})`);
-      const changeSummary = changes.length > 0 ? `<br/><span style="font-size:12px;color:#55575d;">Changed: ${changes.join("; ")}</span>` : "";
       eventRows += `
               <li style="font-family:Arial,sans-serif;font-size:13px;color:#000000;line-height:2;">
-                <b>${event.title}</b> &mdash; ID: ${event.eventId}${changeSummary}
+                <b>${event.title}</b> &mdash; ID: ${event.eventId}
               </li>`;
     });
     eventRows += `
