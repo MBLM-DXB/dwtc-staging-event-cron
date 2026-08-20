@@ -32,6 +32,7 @@ export interface CrmEvent {
   };
   lastUpdatedDate: string;
   WebsiteStatus: string;
+  Status: string;
 }
 
 export interface Env {

@@ -39,6 +39,12 @@ function normalizeDateString(dateString: string): string {
   return dateString.replace(/^"(.*)"$/, "$1");
 }
 
+const CANCELLED_STATUSES = new Set(["cancelled", "post-contract cancellation"]);
+
+export function isEventCancelled(event: CrmEvent): boolean {
+  return CANCELLED_STATUSES.has((event.Status || "").trim().toLowerCase());
+}
+
 export function filterEventsByVenue(
   events: CrmEvent[],
   venue: string,
@@ -50,9 +56,31 @@ export function filterEventsByVenue(
       event.eventVenues &&
       event.eventVenues.includes(venue) &&
       event.WebsiteStatus?.toLowerCase() === "online" &&
+      !isEventCancelled(event) &&
       new Date(event.endDate) <= sixMonthsFromNow,
   );
   return filteredEvents;
+}
+
+/**
+ * CRM events that are marked Online + cancelled and already exist as an
+ * event in Umbraco (matched by eventId) — these need manual follow-up since
+ * they're live on the website but cancelled in the CRM.
+ */
+export function findCancelledLiveEvents(
+  events: CrmEvent[],
+  venue: string,
+  umbracoEvents: UmbracoEvent[],
+): CrmEvent[] {
+  const umbracoEventIds = new Set(umbracoEvents.map((e) => e.eventId));
+  return events.filter(
+    (event) =>
+      event.eventVenues &&
+      event.eventVenues.includes(venue) &&
+      event.WebsiteStatus?.toLowerCase() === "online" &&
+      isEventCancelled(event) &&
+      umbracoEventIds.has(event.eventId.toString()),
+  );
 }
 
 export interface SyncResult {
