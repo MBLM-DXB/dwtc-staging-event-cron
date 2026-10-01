@@ -8,14 +8,28 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Same day one year from now (YYYY-MM-DD, UTC), e.g. 2026-10-01 -> 2027-10-01
+function getEventEndDate(): string {
+  const date = new Date();
+  date.setUTCFullYear(date.getUTCFullYear() + 1);
+  return date.toISOString().slice(0, 10);
+}
+
+function buildCrmUrl(baseUrl: string): string {
+  const url = new URL(baseUrl);
+  url.searchParams.set("eventEndDate", getEventEndDate());
+  return url.toString();
+}
+
 export async function fetchCrmEvents(
   env: Env
 ): Promise<ServiceResponse<CrmEvent[]>> {
   let lastError = "Unknown error occurred";
+  const crmUrl = buildCrmUrl(env.CRM_API_URL);
 
   for (let attempt = 1; attempt <= CRM_FETCH_MAX_ATTEMPTS; attempt++) {
     try {
-      const response = await fetch(env.CRM_API_URL, {
+      const response = await fetch(crmUrl, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

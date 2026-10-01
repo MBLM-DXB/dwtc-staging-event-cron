@@ -61,19 +61,25 @@ export function isEventCancelled(event: CrmEvent): boolean {
   return CANCELLED_STATUSES.has((event.Status || "").trim().toLowerCase());
 }
 
+const ALLOWED_EVENT_TYPES = new Set([
+  "Exhibition",
+  "Sports",
+  "Conference",
+  "Brand Sales",
+  "Concert",
+]);
+
 export function filterEventsByVenue(
   events: CrmEvent[],
   venue: string,
 ): CrmEvent[] {
-  const now = new Date();
-  const sixMonthsFromNow = new Date(now.getFullYear(), now.getMonth() + 6, now.getDate());
   const filteredEvents = events.filter(
     (event) =>
       event.eventVenues &&
       event.eventVenues.includes(venue) &&
       event.WebsiteStatus?.toLowerCase() === "online" &&
       !isEventCancelled(event) &&
-      new Date(event.endDate) <= sixMonthsFromNow,
+      ALLOWED_EVENT_TYPES.has(event.eventType),
   );
   return filteredEvents;
 }
