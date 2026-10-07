@@ -11,9 +11,35 @@ function stripOrgSuffixes(name: string): string {
   return name.replace(ORG_SUFFIXES, "").trim();
 }
 
+// Matches "cancel", "cancelled", "canceled", "cancellation" and common typos (e.g. "cancecled").
+const CANCEL_WORD = "canc?e?c?l+(?:ed|ation)?";
+const CANCEL_SEP = "[\\s*\\-\u2013\u2014:|_.~/]*";
+const CANCEL_WRAPPED = new RegExp(
+  `[*(\\[{<]+\\s*${CANCEL_WORD}\\s*[*)\\]}>]+`,
+  "gi"
+);
+const CANCEL_LEADING = new RegExp(`^${CANCEL_SEP}\\b${CANCEL_WORD}\\b${CANCEL_SEP}`, "i");
+const CANCEL_TRAILING = new RegExp(`${CANCEL_SEP}\\b${CANCEL_WORD}\\b${CANCEL_SEP}$`, "i");
+
+/**
+ * Strips "cancelled" markers the organisers add to CRM event names
+ * (e.g. "*Cancelled* X", "Cancelled -- X", "X (Cancelled)", "X - CANCELED")
+ * so they don't end up on the website. Use only for what is written to
+ * Umbraco; notification emails keep the original CRM title.
+ */
+export function cleanEventTitle(title: string): string {
+  const cleaned = title
+    .replace(CANCEL_WRAPPED, " ")
+    .replace(CANCEL_LEADING, "")
+    .replace(CANCEL_TRAILING, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned || title;
+}
+
 export function slugifyEventName(title: string, startDate: string): string {
   const year = new Date(startDate).getFullYear();
-  const name = title
+  const name = cleanEventTitle(title)
     .replace(/[?#[\]@!$&'()*+,;=<>\\^`{}|~]/g, "")
     .replace(/\s+/g, " ")
     .trim()
@@ -169,8 +195,8 @@ export function mapCrmEventToUmbraco(
   const baseData = {
     contentTypeAlias: "event",
     title: {
-      "en-US": crmEvent.title,
-      ar: crmEvent.title,
+      "en-US": cleanEventTitle(crmEvent.title),
+      ar: cleanEventTitle(crmEvent.title),
     },
     // description: {
     //   "en-US": crmEvent.pageContent,

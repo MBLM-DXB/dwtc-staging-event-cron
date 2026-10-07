@@ -11,6 +11,7 @@ import {
   compareEvents,
   mapCrmEventToUmbraco,
   slugifyEventName,
+  cleanEventTitle,
   findCancelledLiveEvents,
   findOfflineLiveEvents,
   hasLocationChanged,
@@ -173,8 +174,8 @@ export default {
           ar: slugifyEventName(crmEvent.title, crmEvent.startDate),
         },
         title: {
-          "en-US": crmEvent.title,
-          ar: existingEvent.title?.ar || crmEvent.title,
+          "en-US": cleanEventTitle(crmEvent.title),
+          ar: existingEvent.title?.ar || cleanEventTitle(crmEvent.title),
         },
         description: {
           "en-US": crmEvent.pageContent,
@@ -198,8 +199,8 @@ export default {
           location: formatEventLocation(crmEvent.location),
           eventType: crmEvent.eventType,
           eventOrganiser: crmEvent.eventOrganiser,
-          titleChanged: umbracoEvent.title !== crmEvent.title,
-          previousTitle: umbracoEvent.title !== crmEvent.title ? umbracoEvent.title : undefined,
+          titleChanged: umbracoEvent.title !== cleanEventTitle(crmEvent.title),
+          previousTitle: umbracoEvent.title !== cleanEventTitle(crmEvent.title) ? umbracoEvent.title : undefined,
           dateChanged:
             umbracoEvent.startDate !== crmEvent.startDate ||
             umbracoEvent.endDate !== crmEvent.endDate,
