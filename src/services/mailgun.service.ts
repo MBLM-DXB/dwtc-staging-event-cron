@@ -34,12 +34,14 @@ interface SyncSummary {
   createdEvents: EventDetails[];
   failedEvents: Array<EventDetails & { error: string }>;
   cancelledLiveEvents?: CancelledLiveEvent[];
+  offlineLiveEvents?: CancelledLiveEvent[];
   syncDate: string;
 }
 
 function generateExcelAttachment(summary: SyncSummary): Uint8Array {
   const workbook = XLSX.utils.book_new();
   const cancelledLiveEvents = summary.cancelledLiveEvents || [];
+  const offlineLiveEvents = summary.offlineLiveEvents || [];
 
   const summaryData = [
     ["CRM TO UMBRACO SYNC REPORT"],
@@ -56,6 +58,7 @@ function generateExcelAttachment(summary: SyncSummary): Uint8Array {
     ],
     ["Total Failed Events", summary.failedEvents.length],
     ["Cancelled Events Still Live", cancelledLiveEvents.length],
+    ["Offline Events Still Live", offlineLiveEvents.length],
     [""],
     ["STATUS"],
     summary.failedEvents.length === 0
@@ -97,6 +100,14 @@ function generateExcelAttachment(summary: SyncSummary): Uint8Array {
     summaryData.push(["Event Name", "Event ID", "CRM Status"]);
     cancelledLiveEvents.forEach((e) => {
       summaryData.push([e.title, e.eventId, e.status || "Cancelled"]);
+    });
+  }
+
+  if (offlineLiveEvents.length > 0) {
+    summaryData.push([""], ["OFFLINE EVENTS STILL LIVE — ACTION NEEDED"]);
+    summaryData.push(["Event Name", "Event ID", "CRM Website Status"]);
+    offlineLiveEvents.forEach((e) => {
+      summaryData.push([e.title, e.eventId, e.status || "Offline"]);
     });
   }
 
@@ -224,6 +235,33 @@ function generateExcelAttachment(summary: SyncSummary): Uint8Array {
     XLSX.utils.book_append_sheet(workbook, cancelledSheet, "Cancelled - Still Live");
   }
 
+  if (offlineLiveEvents.length > 0) {
+    const offlineData = [
+      [
+        "Event Name",
+        "Event ID",
+        "Start Date",
+        "End Date",
+        "Location",
+        "Event Type",
+        "Organiser",
+        "CRM Website Status",
+      ],
+      ...offlineLiveEvents.map((e) => [
+        e.title,
+        e.eventId,
+        e.startDate || "N/A",
+        e.endDate || "N/A",
+        e.location || "N/A",
+        e.eventType || "N/A",
+        e.eventOrganiser || "N/A",
+        e.status || "Offline",
+      ]),
+    ];
+    const offlineSheet = XLSX.utils.aoa_to_sheet(offlineData);
+    XLSX.utils.book_append_sheet(workbook, offlineSheet, "Offline - Still Live");
+  }
+
   // Write to buffer
   const excelBuffer = XLSX.write(workbook, {
     type: "buffer",
@@ -257,9 +295,12 @@ export async function sendSyncNotificationEmail(
     const cancelledLiveCount = (summary.cancelledLiveEvents || []).length;
     const subjectCancelledSuffix =
       cancelledLiveCount > 0 ? ` - ⚠ ${cancelledLiveCount} Cancelled Event(s) Still Live` : "";
+    const offlineLiveCount = (summary.offlineLiveEvents || []).length;
+    const subjectOfflineSuffix =
+      offlineLiveCount > 0 ? ` - ⚠ ${offlineLiveCount} Offline Event(s) Still Live` : "";
     formData.append(
       "subject",
-      `[DWTC Staging] CRM to Umbraco Sync Report - ${totalProcessed} Events Processed${subjectCancelledSuffix}`
+      `[DWTC Staging] CRM to Umbraco Sync Report - ${totalProcessed} Events Processed${subjectCancelledSuffix}${subjectOfflineSuffix}`
     );
     formData.append("html", emailBody);
     formData.append(
@@ -407,6 +448,35 @@ function buildEmailBody(summary: SyncSummary): string {
         </tr>`;
   }
 
+  const offlineLiveEvents = summary.offlineLiveEvents || [];
+  if (offlineLiveEvents.length > 0) {
+    eventRows += `
+        <tr>
+          <td style="padding:15px 25px 5px;">
+            <p style="margin:0 0 8px;font-family:Verdana,Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#dc3545;">
+              &#9888; Action Needed: Offline Events Still Live on Website (${offlineLiveEvents.length})
+            </p>
+            <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:12px;color:#55575d;">
+              These events are no longer marked as online in the CRM but are still published on the live website. Please review and unpublish manually if needed.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 25px 15px;">
+            <ul style="margin:0;padding-left:20px;list-style-type:disc;">`;
+    offlineLiveEvents.forEach((event) => {
+      eventRows += `
+              <li style="font-family:Arial,sans-serif;font-size:13px;color:#dc3545;line-height:2;">
+                <b>${event.title}</b> &mdash; ID: ${event.eventId}<br/>
+                <span style="font-size:12px;">CRM Website Status: ${event.status || "Offline"}</span>
+              </li>`;
+    });
+    eventRows += `
+            </ul>
+          </td>
+        </tr>`;
+  }
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -481,6 +551,7 @@ function buildEmailBody(summary: SyncSummary): string {
             <li style="font-family:Arial,sans-serif;font-size:13px;color:#000000;line-height:2;"><b>Events Updated:</b> ${summary.updatedEvents.length}</li>
             <li style="font-family:Arial,sans-serif;font-size:13px;color:#000000;line-height:2;"><b>Events Created:</b> ${summary.createdEvents.length}</li>
             ${cancelledLiveEvents.length > 0 ? `<li style="font-family:Arial,sans-serif;font-size:13px;color:#dc3545;line-height:2;"><b>Cancelled Events Still Live:</b> ${cancelledLiveEvents.length}</li>` : ""}
+            ${offlineLiveEvents.length > 0 ? `<li style="font-family:Arial,sans-serif;font-size:13px;color:#dc3545;line-height:2;"><b>Offline Events Still Live:</b> ${offlineLiveEvents.length}</li>` : ""}
             <li style="font-family:Arial,sans-serif;font-size:13px;color:${statusColor};line-height:2;"><b>Status:</b> ${statusText}</li>
           </ul>
         </td>

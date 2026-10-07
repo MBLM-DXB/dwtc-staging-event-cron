@@ -105,6 +105,28 @@ export function findCancelledLiveEvents(
   );
 }
 
+/**
+ * CRM events whose WebsiteStatus is no longer "online" but still exist in
+ * Umbraco (matched by eventId) and haven't ended yet — they were synced while
+ * online, so they're still showing on the website and need manual follow-up.
+ */
+export function findOfflineLiveEvents(
+  events: CrmEvent[],
+  venue: string,
+  umbracoEvents: UmbracoEvent[]
+): CrmEvent[] {
+  const umbracoEventIds = new Set(umbracoEvents.map((e) => e.eventId));
+  const now = new Date();
+  return events.filter(
+    (event) =>
+      event.eventVenues &&
+      event.eventVenues.includes(venue) &&
+      event.WebsiteStatus?.toLowerCase() !== "online" &&
+      new Date(event.endDate) >= now &&
+      umbracoEventIds.has(event.eventId.toString())
+  );
+}
+
 export interface SyncResult {
   toUpdate: Array<{ umbracoEvent: UmbracoEvent; crmEvent: CrmEvent }>;
   toCreate: CrmEvent[];

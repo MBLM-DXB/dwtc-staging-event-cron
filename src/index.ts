@@ -12,6 +12,7 @@ import {
   mapCrmEventToUmbraco,
   slugifyEventName,
   findCancelledLiveEvents,
+  findOfflineLiveEvents,
   hasLocationChanged,
   formatEventLocation,
 } from "./utils/event.utils";
@@ -72,6 +73,17 @@ export default {
       );
     }
 
+    const offlineLiveEvents = findOfflineLiveEvents(
+      crmResponse.data,
+      "DWTC",
+      umbracoResponse.data
+    );
+    if (offlineLiveEvents.length > 0) {
+      console.log(
+        `⚠️ Found ${offlineLiveEvents.length} offline event(s) still live on Umbraco`
+      );
+    }
+
     const { toUpdate, toCreate } = compareEvents(
       filteredCrmEvents,
       umbracoResponse.data
@@ -117,7 +129,7 @@ export default {
       error: string;
     }> = [];
 
-    if (toUpdate.length === 0 && toCreate.length === 0 && cancelledLiveEvents.length === 0) {
+    if (toUpdate.length === 0 && toCreate.length === 0 && cancelledLiveEvents.length === 0 && offlineLiveEvents.length === 0) {
       console.log("✅ All events are up to date - no sync needed!");
       return;
     }
@@ -279,7 +291,7 @@ export default {
 
     console.log("✅ Sync completed successfully!");
 
-    if (updatedEvents.length > 0 || createdEvents.length > 0 || failedEvents.length > 0 || cancelledLiveEvents.length > 0) {
+    if (updatedEvents.length > 0 || createdEvents.length > 0 || failedEvents.length > 0 || cancelledLiveEvents.length > 0 || offlineLiveEvents.length > 0) {
       try {
         await sendSyncNotificationEmail(env, {
           updatedEvents,
@@ -294,6 +306,16 @@ export default {
             eventType: e.eventType,
             eventOrganiser: e.eventOrganiser,
             status: e.Status,
+          })),
+          offlineLiveEvents: offlineLiveEvents.map((e) => ({
+            title: e.title,
+            eventId: e.eventId,
+            startDate: e.startDate,
+            endDate: e.endDate,
+            location: e.location,
+            eventType: e.eventType,
+            eventOrganiser: e.eventOrganiser,
+            status: e.WebsiteStatus,
           })),
           syncDate: new Date().toLocaleString("en-US", {
             timeZone: "Asia/Dubai",
