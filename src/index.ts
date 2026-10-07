@@ -177,10 +177,6 @@ export default {
           "en-US": cleanEventTitle(crmEvent.title),
           ar: existingEvent.title?.ar || cleanEventTitle(crmEvent.title),
         },
-        description: {
-          "en-US": crmEvent.pageContent,
-          ar: existingEvent.description?.ar || crmEvent.pageContent,
-        },
       };
       const updateResult = await updateUmbracoEvent(
         env,
