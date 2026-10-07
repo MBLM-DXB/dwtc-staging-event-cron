@@ -45,8 +45,14 @@ export async function fetchEventById(
   }
 }
 
+/**
+ * Reads only the events under UMBRACO_PARENT_ID (the live events folder),
+ * so copies in sibling folders such as a backup folder are never matched.
+ * One request returns every child; the count is checked against totalCount
+ * so a truncated response fails the sync instead of silently dropping events.
+ */
 export async function fetchUmbracoEvents(
-  env: Env,
+  env: Env
 ): Promise<ServiceResponse<UmbracoEvent[]>> {
   try {
     const response = await fetch(`https://graphql.umbraco.io`, {
@@ -59,16 +65,19 @@ export async function fetchUmbracoEvents(
       body: JSON.stringify({
         query: `
           query {
-            allEvent(preview: true) {
-              items {
-                id
-                eventId
-                lastUpdatedDate
-                name
-                title
-                startDate
-                endDate
-                eventVenues
+            content(id: ${JSON.stringify(env.UMBRACO_PARENT_ID)}, preview: true) {
+              children {
+                totalCount
+                items {
+                  id
+                  name
+                  ... on Event {
+                    eventId
+                    lastUpdatedDate
+                    title
+                    startDate endDate eventVenues
+                  }
+                }
               }
             }
           }
@@ -78,8 +87,23 @@ export async function fetchUmbracoEvents(
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    const data: UmbracoGraphQLResponse = await response.json();
-    return { success: true, data: data.data.allEvent.items };
+    const json: any = await response.json();
+    const children = json?.data?.content?.children;
+    if (!children) {
+      throw new Error(
+        json?.errors?.[0]?.message || "Parent content not found in Umbraco"
+      );
+    }
+    if (children.items.length !== children.totalCount) {
+      throw new Error(
+        `Umbraco returned ${children.items.length} of ${children.totalCount} events`
+      );
+    }
+    // Skip children that aren't events (they have no eventId field)
+    const events: UmbracoEvent[] = children.items.filter(
+      (item: any) => "eventId" in item
+    );
+    return { success: true, data: events };
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
