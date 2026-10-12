@@ -79,6 +79,16 @@ export const location: Record<string, string> = {
   "Exhibition Hall 7": "Hall 7",
   "Exhibition Hall 8": "Hall 8",
 
+  // Exhibition Halls direct names
+  "Hall 1": "Hall 1",
+  "Hall 2": "Hall 2",
+  "Hall 3": "Hall 3",
+  "Hall 4": "Hall 4",
+  "Hall 5": "Hall 5",
+  "Hall 6": "Hall 6",
+  "Hall 7": "Hall 7",
+  "Hall 8": "Hall 8",
+
   // Exhibition Plaza variants → Exhibition Plaza
   "Exhibition Plaza": "Exhibition Plaza",
   "Exhibition Plaza 1": "Exhibition Plaza",
