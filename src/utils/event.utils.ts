@@ -106,7 +106,7 @@ const ALLOWED_EVENT_TYPES = new Set([
   "Exhibition",
   "Sports",
   "Conference",
-  "Brand Sales",
+  "Brand Sale", // matches Umbraco's checkbox-list option name exactly
   "Concert",
 ]);
 
@@ -270,7 +270,9 @@ export function mapCrmEventToUmbraco(
     //   $invariant: crmEvent.eventSectors,
     // },
     eventType: {
-      $invariant: crmEvent.eventType,
+      // Umbraco stores this as a checkbox-list (array of strings), not a
+      // single scalar, so it must be wrapped even though the CRM sends one.
+      $invariant: [crmEvent.eventType],
     },
     eventVenues: {
       $invariant: crmEvent.location
