@@ -40,7 +40,8 @@ export function cleanEventTitle(title: string): string {
 export function slugifyEventName(title: string, startDate: string): string {
   const year = new Date(startDate).getFullYear();
   const name = cleanEventTitle(title)
-    .replace(/[?#[\]@!$&'()*+,;=<>\\^`{}|~]/g, "")
+    .replace(/\//g, " ")
+    .replace(/[?#[\]@!$&'()*+,;=<>\\^`{}|~.]/g, "")
     .replace(/\s+/g, " ")
     .trim()
     .replace(/\s+\d{4}$/, "");
