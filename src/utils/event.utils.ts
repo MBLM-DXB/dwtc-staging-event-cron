@@ -81,6 +81,20 @@ function normalizeDateString(dateString: string): string {
   return dateString.replace(/^"(.*)"$/, "$1");
 }
 
+/**
+ * Compare a CRM date with an Umbraco date. Umbraco returns UTC dates with a
+ * trailing "Z" (and sometimes milliseconds) while CRM omits them, so the raw
+ * strings never match even when the date is the same.
+ */
+export function isSameDate(
+  crmDate: string | null | undefined,
+  umbracoDate: string | null | undefined
+): boolean {
+  const normalize = (date: string | null | undefined) =>
+    normalizeDateString(date ?? "").replace(/(\.\d+)?Z$/, "");
+  return normalize(crmDate) === normalize(umbracoDate);
+}
+
 const CANCELLED_STATUSES = new Set(["cancelled", "post-contract cancellation"]);
 
 export function isEventCancelled(event: CrmEvent): boolean {

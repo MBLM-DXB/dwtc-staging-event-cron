@@ -16,6 +16,7 @@ import {
   findOfflineLiveEvents,
   hasLocationChanged,
   formatEventLocation,
+  isSameDate,
 } from "./utils/event.utils";
 import type { Env, CreateEventRequest } from "./types/events.types";
 
@@ -198,12 +199,12 @@ export default {
           titleChanged: umbracoEvent.title !== cleanEventTitle(crmEvent.title),
           previousTitle: umbracoEvent.title !== cleanEventTitle(crmEvent.title) ? umbracoEvent.title : undefined,
           dateChanged:
-            umbracoEvent.startDate !== crmEvent.startDate ||
-            umbracoEvent.endDate !== crmEvent.endDate,
+            !isSameDate(crmEvent.startDate, umbracoEvent.startDate) ||
+            !isSameDate(crmEvent.endDate, umbracoEvent.endDate),
           previousStartDate:
-            umbracoEvent.startDate !== crmEvent.startDate ? umbracoEvent.startDate : undefined,
+            !isSameDate(crmEvent.startDate, umbracoEvent.startDate) ? umbracoEvent.startDate : undefined,
           previousEndDate:
-            umbracoEvent.endDate !== crmEvent.endDate ? umbracoEvent.endDate : undefined,
+            !isSameDate(crmEvent.endDate, umbracoEvent.endDate) ? umbracoEvent.endDate : undefined,
           locationChanged: hasLocationChanged(crmEvent.location, umbracoEvent.eventVenues),
           previousLocation: hasLocationChanged(crmEvent.location, umbracoEvent.eventVenues)
             ? umbracoEvent.eventVenues.join(", ")
