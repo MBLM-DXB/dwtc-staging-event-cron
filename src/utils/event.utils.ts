@@ -225,10 +225,8 @@ export function mapCrmEventToUmbraco(
       "en-US": stripOrgSuffixes(crmEvent.eventOrganiser),
       ar: stripOrgSuffixes(crmEvent.eventOrganiser),
     },
-    websiteURL: {
-      "en-US": crmEvent.websiteURL,
-      ar: crmEvent.websiteURL,
-    },
+    // websiteURL intentionally not mapped from CRM: it isn't needed on the
+    // site, and CRM's is always null, so mapping it would wipe existing links.
     eventId: {
       $invariant: crmEvent.eventId,
     },

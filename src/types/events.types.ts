@@ -83,7 +83,7 @@ export interface CreateEventRequest {
   description?: LocalizedField;
   location?: LocalizedField<string | null>;
   eventOrganiser: LocalizedField;
-  websiteURL: LocalizedField<string | null>;
+  websiteURL?: LocalizedField<string | null>;
   eventId: InvariantField<number>;
   lastUpdatedDate: InvariantField;
   facebook?: LocalizedField<string | null>;
