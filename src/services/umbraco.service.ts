@@ -51,8 +51,10 @@ export async function fetchEventById(
  * One request returns every child; the count is checked against totalCount
  * so a truncated response fails the sync instead of silently dropping events.
  */
+// preview: true includes unpublished pages; false returns only published (live) pages
 export async function fetchUmbracoEvents(
-  env: Env
+  env: Env,
+  preview = true
 ): Promise<ServiceResponse<UmbracoEvent[]>> {
   try {
     const response = await fetch(`https://graphql.umbraco.io`, {
@@ -65,7 +67,7 @@ export async function fetchUmbracoEvents(
       body: JSON.stringify({
         query: `
           query {
-            content(id: ${JSON.stringify(env.UMBRACO_PARENT_ID)}, preview: true) {
+            content(id: ${JSON.stringify(env.UMBRACO_PARENT_ID)}, preview: ${preview}) {
               children {
                 totalCount
                 items {
@@ -234,3 +236,4 @@ export async function publishUmbracoEvent(
     return { success: false, error: errorMessage };
   }
 }
+
